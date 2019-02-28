@@ -3,6 +3,12 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 
+//파이어 베이스 사용
+import * as firebase from 'firebase';
+import { firebaseConfig } from './config';
+firebase.initializeApp(firebaseConfig);
+//파이어 베이스 사용 끝
+//
 export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
