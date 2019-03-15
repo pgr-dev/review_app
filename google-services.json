@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "542840505079",
+    "firebase_url": "https://penguinreport.firebaseio.com",
+    "project_id": "penguinreport",
+    "storage_bucket": "penguinreport.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542840505079:android:7ba5d33b901f370b",
+        "android_client_info": {
+          "package_name": "com.penguinreport.expo.googlesignin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "542840505079-ib372fln2nchfs54spptgtriqcn6vki2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsRvPRNzpuuiwixWu4TutIQZNUxTbABgg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

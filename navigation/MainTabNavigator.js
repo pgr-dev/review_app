@@ -7,7 +7,7 @@ import {
 
 import TabBarIcon from "../components/TabBarIcon";
 import HomeScreen from "../screens/main_screens/HomeScreen";
-import LinksScreen from "../screens/main_screens/LinksScreen";
+import MyReviewInfoScreen from "../screens/main_screens/MyReviewInfoScreen";
 import SettingsScreen from "../screens/main_screens/SettingsScreen";
 
 const HomeStack = createStackNavigator({
@@ -29,12 +29,12 @@ HomeStack.navigationOptions = {
   )
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen
+const MyReviewInfoStack = createStackNavigator({
+  MyReviewInfo: MyReviewInfoScreen
 });
 
-LinksStack.navigationOptions = {
-  tabBarLabel: "Links",
+MyReviewInfoStack.navigationOptions = {
+  tabBarLabel: "MyReview",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -59,6 +59,6 @@ SettingsStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   HomeStack,
-  LinksStack,
+  MyReviewInfoStack,
   SettingsStack
 });

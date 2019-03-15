@@ -9,7 +9,9 @@ import {
   TouchableOpacity,
   View,
   KeyboardAvoidingView,
-  AsyncStorage
+  AsyncStorage,
+  ActivityIndicator,
+  Icon
 } from "react-native";
 import {
   Container,
@@ -20,36 +22,52 @@ import {
   Left,
   Right
 } from "native-base";
-import MapView from "react-native-maps";
+
+import { MapView, Marker } from "react-native-maps";
 
 export default class HomeScreen extends React.Component {
-  state = {
-    storeName: "",
-    searched: false,
-    searching: false,
-    storeList: []
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      storeName: "",
+      searched: false,
+      // searching: false,
+      storeList: []
+    };
+  }
 
   static navigationOptions = {
     header: null
   };
 
+  //render start--------------------------------------------------------------------------------------------
+
   render() {
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-        <ScrollView style={styles.mapHighConatiner}>
-          <MapView
-            style={styles.mapcontainer}
-            initialRegion={{
-              latitude: 35.227703,
-              longitude: 126.839799,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421
-            }}
-            showsBuildings={true}
-            loadingEnabled={true}
-          />
-        </ScrollView>
+        {/* <MapView
+          style={styles.mapcontainer}
+          initialRegion={{
+            latitude: 35.227703,
+            longitude: 126.839799,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421
+          }}
+        /> */}
+          {/* {this.state.searched ? (
+              this.state.storeList.map(storeList => (
+                <Marker
+                  coordinate={storeList.marker.LatLng}
+                  title={storeList.title}
+                  description={storeList.marker.description}
+                />
+              ))
+            ) : (
+              <View />
+            )} */}
+
+        <ScrollView style={styles.mapHighConatiner} />
+
         <View style={styles.searchBarContainer}>
           <TextInput
             style={styles.searchBarTextInput}
@@ -60,32 +78,27 @@ export default class HomeScreen extends React.Component {
             onBlur={this._searchCancled}
             onSubmitEditing={this._searchStoreName}
           />
-          {searched ? (
-            <View>
-              <List>
-                {this.state.storeList.map(item => {
-                  return (
-                    <ListItem>
-                      <Left>
-                      <View>
-                        <Text></Text>
-                        <Text></Text>
-                      </View>
-                      </Left>
-                      <Right>
-                      <View>
-                        <Icon></Icon>
-                      </View>
-                      </Right>
-                    </ListItem>
-                  );
-                })}
-              </List>
-            </View>
-          ) : (
-            <View />
-          )}
         </View>
+        {this.state.searched ? ( //서치 후 나타나는 창
+          <View>
+            <List>
+              {this.state.storeList.map(store => (
+                <ListItem key={store.id}>
+                <TouchableOpacity>
+                  <Left>
+                    <View>
+                      <Text>{store.title}</Text>
+                      <Text>{store.location}</Text>
+                    </View>
+                  </Left>
+                  </TouchableOpacity>
+                </ListItem>
+              ))}
+            </List>
+          </View>
+        ) : (
+          <View />
+        )}
       </KeyboardAvoidingView>
     );
   }
@@ -97,50 +110,65 @@ export default class HomeScreen extends React.Component {
     this.setState({
       storeName: text
     });
+    console.log(this.state.storeName);
   };
 
   __searchCancled = () => {
     // 텍스트 인풋을 벗어난 클릭 시 state인 storeName을 초기화 시킨다.
     this.setState({
-      storeName: "",
-      searching : false
+      storeName: ""
     });
+    console.log(this.state.storeName);
   };
 
   _searchStoreName = async () => {
     this.setState({
-      searching: true
-    })
+      searched: false
+    });
+    //서버와의 연동
+
     try {
-      const URL = ""; //서버 주소
-      console.log(URL);
-      const data = new FormData(); //보내는 데이터
+      let response = await fetch(
+        "http://www.json-generator.com/api/json/get/cfbfyscnYi?indent=2"
+      );
+      let rData = await response.json();
+      this.setState({
+        storeList: rData.storelist,
+        searched: true
+      });
+    } catch (error) {
+      console.error(error);
+    }
 
-      console.log("awaiting response...");
-      axios
-        .post(URL, { data: this.state.storeName })
-        .then(rData => {
-          console.log("received response...");
+    // try {
+    //   const URL = ""; //서버 주소
+    //   console.log(URL);
 
-          console.log(JSON.stringify(rData.data));
+    //   console.log("awaiting response...");
+    //   axios
+    //     .post(URL, { data: this.state.storeName })
+    //     .then(rData => {
+    //       console.log("received response...");
 
-          if (rData.data) {
-            this.setState({
-              searched: true,
-              searching: false,
-              rData: rData
-            });
-            return;
-          } else {
-            this.setState({
-              searched: false,
-              searching: false,
-              error: rData.data.error
-            });
-          }
-        })
-        .catch(err => console.log(err));
-    } catch (error) {}
+    //       console.log(JSON.stringify(rData.data));
+
+    //       if (rData.data) {
+    //         this.setState({
+    //           searched: true,
+    //           searching: false,
+    //           rData: rData,
+    //           markers: rData.marker
+    //         });
+    //         return;
+    //       } else {
+    //         this.setState({
+    //           searched: false,
+    //           searching: false
+    //         });
+    //       }
+    //     })
+    //     .catch(err => console.log(err));
+    // } catch (error) {}
   };
 }
 

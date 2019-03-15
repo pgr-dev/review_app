@@ -23,7 +23,17 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.penguinreport.expo.googlesignin",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.542840505079-3637lts4m6pjovuptfcjso9urhvk2rfv"
+        }
+      }
+    },
+    "android": {
+      "package": "com.penguinreport.expo.googlesignin",
+      "googleServicesFile": "./google-services.json"
     }
   }
 }
