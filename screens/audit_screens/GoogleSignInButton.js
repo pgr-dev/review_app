@@ -20,7 +20,7 @@ export default class GoogleSignInButton extends React.PureComponent {
       >
         <View style={styles.content}>
           <Image source={googleIcon} style={styles.icon} />
-          <Text style={styles.text}>{children}</Text>
+          <Text style={styles.text}>Log in with Google</Text>
         </View>
       </TouchableOpacity>
     );

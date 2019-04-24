@@ -13,163 +13,122 @@ import {
   List,
   ListItem,
   Left,
-  Right
+  Body,
+  Right,
+  Button,
+  Icon
 } from "native-base";
 
 export default class ReviewInfoScreen extends React.Component {
   render() {
     return (
-      <Container style={styles.container}>
-        <Content>
-          <List>
-            <ListItem itemDivider />
-            <ListItem>
-              <Left>
-                <Text>방문 날짜</Text>
-              </Left>
-              <Right>
-                <TextInput />
-              </Right>
-            </ListItem>
-            <ListItem itemDivider />
-            <ListItem>
-              <Left>
-                <Text>작성 시간</Text>
-              </Left>
-              <Right>
-                <Text>gg</Text>
-              </Right>
-            </ListItem>
-            <ListItem itemDivider>
-              <Text>작성 시간은 리뷰 최초 저장 시 기록됩니다.</Text>
-            </ListItem>
-            <ListItem>
-              <Left>
-                <Text>음식점</Text>
-              </Left>
-              <Right>
-                <Text>펭귄리포트(1호점)</Text>
-              </Right>
-            </ListItem>
-            <ListItem>
-              <Left>
+      <View style={styles.container}>
+        <Container>
+          <Header style={styles.header}>
+              <Button
+                transparent
+                onPress={() => this.props.navigation.navigate("HomeScreen")}
+                style={{ marginLeft: 10 }}
+              >
+                <Icon name="arrow-back" />
+              </Button>
+              <Text>음식점 등록</Text>
+              <View></View>
+          </Header>
+          <Content>
+            <List>
+              <ListItem itemDivider style={{ height: 50 }}>
+                <Text style={styles.itemDivider}>간판 사진</Text>
+              </ListItem>
+              <ListItem style={{ height: 293 }}>
+                <TouchableOpacity>
+                  <View />
+                </TouchableOpacity>
+              </ListItem>
+              <ListItem itemDivider style={{ height: 75, flexDirection: "column" }}> 
+                <Text style={styles.itemDivider}>간판의 내용이 모두 보이도록 사진을 찍어 주세요.</Text>
+                <Text style={styles.itemDivider}>주소</Text>
+              </ListItem>
+              <ListItem>
+                <TextInput placeholder="적어" />
+              </ListItem>
+              <ListItem>
+                <TextInput placeholder="층" />
+              </ListItem>
+              <ListItem itemDivider />
+              <ListItem>
+                <TextInput placeholder="음식점 이름" />
+              </ListItem>
+              <ListItem>
+                <TextInput placeholder="지점 이름" />
+              </ListItem>
+              <ListItem itemDivider />
+              <ListItem>
                 <Text>리뷰 유형</Text>
-              </Left>
-              <Right>
-                <Text>식사</Text>
-              </Right>
-            </ListItem>
-            <ListItem>
-              <Left>
-                <Text>리뷰어</Text>
-              </Left>
-              <Right>
-                <Text>젠투펭귄</Text>
-              </Right>
-            </ListItem>
-            <ListItem itemDivider />
-            <ListItem>
-              <View>
-                <Left>
-                  <Text>크기</Text>
-                </Left>
                 <View>
-                  <TouchableOpacity>
-                    <Text>소</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>중</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>대</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>특대</Text>
-                  </TouchableOpacity>
+                  <TouchableOpacity />
+                  <TouchableOpacity />
+                  <TouchableOpacity />
                 </View>
-              </View>
-              <View>
-                <Left>
-                  <Text>복층</Text>
-                </Left>
-                <View>
-                  <TouchableOpacity>
-                    <Text>N</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>Y</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View>
-                <Left>
-                  <Text>룸</Text>
-                </Left>
-                <View>
-                  <TouchableOpacity>
-                    <Text>N</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>Y</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View>
-                <Left>
-                  <Text>셀프 서비스</Text>
-                </Left>
-                <View>
-                  <TouchableOpacity>
-                    <Text>없음</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>결제</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>배식</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>퇴식</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View>
-                <Left>
-                  <Text>화장실</Text>
-                </Left>
-                <View>
-                  <TouchableOpacity>
-                    <Text>없음</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>내부</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>외부</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </ListItem>
-            <ListItem itemDivider />
-            <ListItem>
-              <TouchableOpacity>
-                <Left>
-                  <Text>리뷰 삭제</Text>
-                </Left>
-              </TouchableOpacity>
-            </ListItem>
-            <ListItem itemDivider>
-              <Text>승인되지 않은 리뷰만 삭제 가능합니다.</Text>
-            </ListItem>
-          </List>
-        </Content>
-      </Container>
+              </ListItem>
+            </List>
+          </Content>
+        </Container>
+        <View style={styles.registerButtonContainer}>
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("ReviewInfo")}
+            style={styles.registerButton}
+          >
+            <Text style={{ color: "white", textAlign: "center" }}>
+              음식점 등록
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    position: "relative",
+    borderStyle: "solid",
+    borderWidth: 0.5,
+    borderColor: "#d1d1d6"
+  },
+  header: {
+    backgroundColor: "white",
+    height: 64,
+    flexDirection : "column",
+    justifyContent: "space-between"
+  },
+  itemDivider: {
+    fontSize: 14,
+    fontWeight: "normal",
+    fontStyle: "normal",
+    letterSpacing: 0,
+    textAlign: "left",
+    color: "#8e8e93"
+  },
+  registerButtonContainer: {
+    width: "100%",
+    paddingRight: 8,
+    paddingLeft: 8,
+    position: "absolute",
+    bottom: 0,
+    height: 60,
+    backgroundColor: "#ffffff",
+    borderWidth: 0.5,
+    borderColor: "#d1d1d6",
+    justifyContent: "center",
+    alignItems: "stretch"
+  },
+  registerButton: {
+    backgroundColor: "#c7c7cc",
+    borderRadius: 12,
+    height: 48,
+    justifyContent: "center",
+    alignItems: "center"
   }
 });

@@ -17,6 +17,11 @@ import {
 } from "native-base";
 
 export default class ReviewInfoScreen extends React.Component {
+
+  static navigationOptions = {
+    header: null
+  };
+  
   render() {
     return (
       <Container style={styles.container}>

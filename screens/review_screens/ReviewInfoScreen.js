@@ -17,6 +17,11 @@ import {
 } from "native-base";
 
 export default class ReviewInfoScreen extends React.Component {
+  
+  static navigationOptions = {
+    header: null
+  };
+
   render() {
     return (
       <Container style={styles.container}>
@@ -74,89 +79,75 @@ export default class ReviewInfoScreen extends React.Component {
                   <Text>크기</Text>
                 </Left>
                 <View>
-                  <TouchableOpacity>
-                    <Text>소</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>중</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>대</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>특대</Text>
-                  </TouchableOpacity>
+                  <Text>소</Text>
+
+                  <Text>중</Text>
+
+                  <Text>대</Text>
+
+                  <Text>특대</Text>
                 </View>
               </View>
+            </ListItem>
+            <ListItem>
               <View>
                 <Left>
                   <Text>복층</Text>
                 </Left>
                 <View>
-                  <TouchableOpacity>
-                    <Text>N</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>Y</Text>
-                  </TouchableOpacity>
+                  <Text>N</Text>
+
+                  <Text>Y</Text>
                 </View>
               </View>
+            </ListItem>
+            <ListItem>
               <View>
                 <Left>
                   <Text>룸</Text>
                 </Left>
                 <View>
-                  <TouchableOpacity>
-                    <Text>N</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>Y</Text>
-                  </TouchableOpacity>
+                  <Text>N</Text>
+
+                  <Text>Y</Text>
                 </View>
               </View>
+            </ListItem>
+            <ListItem>
               <View>
                 <Left>
                   <Text>셀프 서비스</Text>
                 </Left>
                 <View>
-                  <TouchableOpacity>
-                    <Text>없음</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>결제</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>배식</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>퇴식</Text>
-                  </TouchableOpacity>
+                  <Text>없음</Text>
+
+                  <Text>결제</Text>
+
+                  <Text>배식</Text>
+
+                  <Text>퇴식</Text>
                 </View>
               </View>
+            </ListItem>
+            <ListItem>
               <View>
                 <Left>
                   <Text>화장실</Text>
                 </Left>
                 <View>
-                  <TouchableOpacity>
-                    <Text>없음</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>내부</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text>외부</Text>
-                  </TouchableOpacity>
+                  <Text>없음</Text>
+
+                  <Text>내부</Text>
+
+                  <Text>외부</Text>
                 </View>
               </View>
             </ListItem>
             <ListItem itemDivider />
             <ListItem>
-              <TouchableOpacity>
-                <Left>
-                  <Text>리뷰 삭제</Text>
-                </Left>
-              </TouchableOpacity>
+              <Left>
+                <Text>리뷰 삭제</Text>
+              </Left>
             </ListItem>
             <ListItem itemDivider>
               <Text>승인되지 않은 리뷰만 삭제 가능합니다.</Text>

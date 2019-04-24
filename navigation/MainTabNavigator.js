@@ -11,7 +11,7 @@ import MyReviewInfoScreen from "../screens/main_screens/MyReviewInfoScreen";
 import SettingsScreen from "../screens/main_screens/SettingsScreen";
 
 const HomeStack = createStackNavigator({
-  Home: HomeScreen
+  HomeScreen: HomeScreen
 });
 
 HomeStack.navigationOptions = {
@@ -57,8 +57,16 @@ SettingsStack.navigationOptions = {
   )
 };
 
-export default createBottomTabNavigator({
-  HomeStack,
-  MyReviewInfoStack,
-  SettingsStack
-});
+export default createBottomTabNavigator(
+  {
+    HomeStack,
+    MyReviewInfoStack,
+    SettingsStack
+  },
+  {
+    initialRouteName: "HomeStack",
+    activeColor: "#f0edf6",
+    inactiveColor: "#3e2465",
+    barStyle: { backgroundColor: "#694fad" }
+  }
+);
