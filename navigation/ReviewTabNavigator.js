@@ -9,38 +9,42 @@ import ReviewInfoScreen from "../screens/review_screens/ReviewInfoScreen";
 import ReviewCameraScreen from "../screens/review_screens/ReviewCameraScreen";
 import ReviewWritingScreen from "../screens/review_screens/ReviewWritingScreen";
 
-const InfoStack = createStackNavigator({
-  ReviewInfo: ReviewInfoScreen
-});
+// const InfoStack = createStackNavigator({
+//   ReviewInfo: ReviewInfoScreen
+// });
 
-InfoStack.navigationOptions = {
-  header: null,
-  tabBarLabel: "정보"
-};
+// InfoStack.navigationOptions = {
+//   header: null,
+//   tabBarLabel: "정보"
+// };
 
-const WritingStack = createStackNavigator({
-  ReviewWriting: ReviewWritingScreen
-});
+// const WritingStack = createStackNavigator({
+//   ReviewWriting: ReviewWritingScreen
+// });
 
-WritingStack.navigationOptions = {
-  header: null,
-  tabBarLabel: "리뷰"
-};
+// WritingStack.navigationOptions = {
+//   // header: null,
+//   tabBarLabel: "리뷰"
+// };
 
-const CameraStack = createStackNavigator({
-  ReviewCamera: ReviewCameraScreen
-});
+// const CameraStack = createStackNavigator({
+//   ReviewCamera: ReviewCameraScreen
+// });
 
-CameraStack.navigationOptions = {
-  header: null,
-  tabBarLabel: "사진"
-};
+// CameraStack.navigationOptions = {
+//   header: null,
+//   tabBarLabel: "사진"
+// };
 
 
 export default createMaterialTopTabNavigator({
-  InfoStack,
-  WritingStack,
-  CameraStack
+  // InfoStack,
+  // WritingStack,
+  // CameraStack
+  Info : {screen : ReviewInfoScreen},
+  Writing : {screen : ReviewWritingScreen},
+  Camera : {screen : ReviewCameraScreen},
+
 },{
   tabBarOptions: {
     style: {marginTop : 70},

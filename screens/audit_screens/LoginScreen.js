@@ -19,6 +19,7 @@ const clientId =
 const isAndroid = () => Platform.OS === "android";
 
 export default class App extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {

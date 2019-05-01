@@ -15,6 +15,10 @@ export default class App extends React.Component {
     isLoadingComplete: false,
   };
 
+  static navigationOptions = {
+    header: null
+  };
+
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (

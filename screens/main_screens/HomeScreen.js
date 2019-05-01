@@ -33,7 +33,13 @@ export default class HomeScreen extends React.Component {
       storeName: "",
       searched: false,
       searching: false,
-      storeList: []
+      storeList: [],
+      region: {
+        latitude: 35.227703,
+        longitude: 126.839799,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421
+      }
     };
   }
 
@@ -41,33 +47,45 @@ export default class HomeScreen extends React.Component {
     header: null
   };
 
+  // getInitialState() {
+  //   return {
+  //     region: {
+  //       latitude: 35.227703,
+  //       longitude: 126.839799,
+  //       latitudeDelta: 0.0922,
+  //       longitudeDelta: 0.0421
+  //     }
+  //   };
+  // }
+
+  _onRegionChange = region => {
+    this.setState({ region: region });
+    // console.log(this.state.region)
+  };
+
   //render start--------------------------------------------------------------------------------------------
 
   render() {
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-        <ScrollView style={styles.mapHighConatiner}>
+        <ScrollView style={this.state.searched ? {flex:0.4, maxHeight: 281} : styles.mapHighConatiner}>
           <MapView
             style={styles.mapcontainer}
-            initialRegion={{
-              latitude: 35.227703,
-              longitude: 126.839799,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421
-            }}
+            initialRegion={this.state.region}
+            onRegionChange={this._onRegionChange}
           >
-            {/* {this.state.searched
-            ? this.state.storeList.map(storeList =>
-                <Marker
-                  coordinate={storeList.marker.LatLng}
-                  title={storeList.title}
-                  description={storeList.marker.description}
-                />
-              )
-            : <View />} */}
+            {this.state.searched
+              ? this.state.storeList.map(storeList =>
+                  <MapView.Marker
+                    key={storeList.id}
+                    coordinate={storeList.marker.LatLng}
+                    title={storeList.title}
+                    description={storeList.marker.description}
+                  />
+                )
+              : <View />}
           </MapView>
         </ScrollView>
-
         <View style={styles.searchBarContainer}>
           <TextInput
             value={this.state.storeName}
@@ -86,18 +104,18 @@ export default class HomeScreen extends React.Component {
             : <View />}
         </View>
         {this.state.searched //서치 후 나타나는 창
-          ? <ScrollView style={{ maxHeight: 350 }}>
+          ? <ScrollView style={{ flex : 0.4, maxHeight: 282 }}>
               <List style={styles.searchedContainer}>
                 {this.state.storeList.map(store =>
                   <ListItem
                     key={store.id}
                     style={styles.ListItem}
-                    onPress={() => this.props.navigation.navigate("Store")}
+                    onPress={() => this.props.navigation.push("Store")}
                   >
                     <Left>
                       <View>
                         <Text>
-                          {store.title}
+                        {store.id}.{store.title}
                         </Text>
                         <Text>
                           {store.location}
@@ -106,9 +124,7 @@ export default class HomeScreen extends React.Component {
                     </Left>
                     <Right>
                       <View>
-                        <Text>
-                          {store.marker.description}
-                        </Text>
+                        <StoreStatus isWritten={store.status.isWritten} storeType={store.status.storeType}></StoreStatus>
                       </View>
                     </Right>
                   </ListItem>
@@ -116,22 +132,22 @@ export default class HomeScreen extends React.Component {
               </List>
             </ScrollView>
           : this.state.searching
-            ? <View style={{ height: 30 }}>
+            ? <View style={{ height: 50 }}>
                 <ActivityIndicator />
               </View>
-            : <View />}
+            : <View style={{ height: 0 }}/>}
       </KeyboardAvoidingView>
     );
   }
 
-  //function start-----------------------------------------------------------------------------------------------------------------------------------------------------
+  //function start----------------------------  ------------------------------------------------------------------------------------------------------------------------
 
   _searchTextChange = text => {
     // 텍스트 변경 될 시 state인 storeName 현재 값인 text를 넣는다.
     this.setState({
       storeName: text
     });
-    
+
     console.log(this.state.storeName);
   };
 
@@ -139,8 +155,8 @@ export default class HomeScreen extends React.Component {
     // 텍스트 인풋을 벗어난 클릭 시 state인 storeName을 초기화 시킨다.
     this.setState({
       storeName: "",
-      searched : false,
-      searching : false
+      searched: false,
+      searching: false
     });
     console.log(this.state.storeName);
   };
@@ -198,21 +214,35 @@ export default class HomeScreen extends React.Component {
   };
 }
 
+
+class StoreStatus extends React.Component{
+  render() {
+    return (
+      <TouchableOpacity style={this.props.isWritten ? styles.inabledStatus : styles.disabledStatus}>
+        {this.props.storeType.map(storeType => <Text key={storeType.toString()}>{storeType}</Text>)}
+      </TouchableOpacity>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    justifyContent : "flex-start",
+    alignItems : "stretch"
   },
   mapHighConatiner: {
-    flex: 9
+    flex: 0.9
   },
   mapcontainer: {
     height: 600
   },
   searchBarContainer: {
     position: "relative",
-    height: 60,
+    // flex: 0.1,
+    minHeight : 60,
     borderTopColor: "rgba(209,209,214,1)",
     borderStyle: "solid",
     borderTopWidth: 0.5,
@@ -245,5 +275,21 @@ const styles = StyleSheet.create({
   searchedContainer: {},
   ListItem: {
     height: 75
-  }
+  },
+  inabledStatus:{
+    width : 60,
+    height : 30,
+    borderRadius : 15,
+    backgroundColor : "#f0faff",
+    color : "rgba(255, 255, 255, 0)",
+    flexDirection: "row",
+  },
+  disabledStatus:{
+    width : 60,
+    height : 30,
+    borderRadius : 15,
+    backgroundColor : "#f6f6fa",
+    color : "rgba(4, 4, 15, 0.45)",
+    flexDirection: "row",
+  },
 });

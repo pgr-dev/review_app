@@ -4,7 +4,6 @@ import {
   createStackNavigator,
   createBottomTabNavigator
 } from "react-navigation";
-
 import TabBarIcon from "../components/TabBarIcon";
 import HomeScreen from "../screens/main_screens/HomeScreen";
 import MyReviewInfoScreen from "../screens/main_screens/MyReviewInfoScreen";
@@ -17,7 +16,7 @@ const HomeStack = createStackNavigator({
 HomeStack.navigationOptions = {
   header: null,
   tabBarLabel: "Home",
-  tabBarIcon: ({ focused }) => (
+  tabBarIcon: ({ focused }) =>
     <TabBarIcon
       focused={focused}
       name={
@@ -26,7 +25,6 @@ HomeStack.navigationOptions = {
           : "md-information-circle"
       }
     />
-  )
 };
 
 const MyReviewInfoStack = createStackNavigator({
@@ -35,12 +33,11 @@ const MyReviewInfoStack = createStackNavigator({
 
 MyReviewInfoStack.navigationOptions = {
   tabBarLabel: "MyReview",
-  tabBarIcon: ({ focused }) => (
+  tabBarIcon: ({ focused }) =>
     <TabBarIcon
       focused={focused}
       name={Platform.OS === "ios" ? "ios-link" : "md-link"}
     />
-  )
 };
 
 const SettingsStack = createStackNavigator({
@@ -49,12 +46,11 @@ const SettingsStack = createStackNavigator({
 
 SettingsStack.navigationOptions = {
   tabBarLabel: "Settings",
-  tabBarIcon: ({ focused }) => (
+  tabBarIcon: ({ focused }) =>
     <TabBarIcon
       focused={focused}
       name={Platform.OS === "ios" ? "ios-options" : "md-options"}
     />
-  )
 };
 
 export default createBottomTabNavigator(

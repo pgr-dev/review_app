@@ -19,22 +19,28 @@ import {
   Icon
 } from "native-base";
 
+class LogoTitle extends React.Component {
+  render() {
+    return (
+      <View>
+        <Text>lol</Text>
+      </View>
+    );
+  }
+}
+
 export default class ReviewInfoScreen extends React.Component {
+
+
   render() {
     return (
       <View style={styles.container}>
         <Container>
-          <Header style={styles.header}>
-              <Button
-                transparent
-                onPress={() => this.props.navigation.navigate("HomeScreen")}
-                style={{ marginLeft: 10 }}
-              >
-                <Icon name="arrow-back" />
-              </Button>
-              <Text>음식점 등록</Text>
-              <View></View>
-          </Header>
+          {/* <Header style={styles.header}>
+            <Left />
+            <Text>음식점 등록</Text>
+            <View />
+          </Header> */}
           <Content>
             <List>
               <ListItem itemDivider style={{ height: 50 }}>
@@ -45,8 +51,13 @@ export default class ReviewInfoScreen extends React.Component {
                   <View />
                 </TouchableOpacity>
               </ListItem>
-              <ListItem itemDivider style={{ height: 75, flexDirection: "column" }}> 
-                <Text style={styles.itemDivider}>간판의 내용이 모두 보이도록 사진을 찍어 주세요.</Text>
+              <ListItem
+                itemDivider
+                style={{ height: 75, flexDirection: "column" }}
+              >
+                <Text style={styles.itemDivider}>
+                  간판의 내용이 모두 보이도록 사진을 찍어 주세요.
+                </Text>
                 <Text style={styles.itemDivider}>주소</Text>
               </ListItem>
               <ListItem>
@@ -76,12 +87,10 @@ export default class ReviewInfoScreen extends React.Component {
         </Container>
         <View style={styles.registerButtonContainer}>
           <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("ReviewInfo")}
+            onPress={() => this.props.navigation.navigate("Review")}
             style={styles.registerButton}
           >
-            <Text style={{ color: "white", textAlign: "center" }}>
-              음식점 등록
-            </Text>
+            <Text style={{ color: "white", textAlign: "center" }}>음식점 등록</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -100,7 +109,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: "white",
     height: 64,
-    flexDirection : "column",
+    flexDirection: "column",
     justifyContent: "space-between"
   },
   itemDivider: {
