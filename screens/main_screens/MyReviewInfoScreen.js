@@ -18,6 +18,10 @@ import {
   Right
 } from "native-base";
 
+
+const linkdata = require('../../linkdata.json');
+
+
 export default class MyReviewInfoScreen extends React.Component {
   constructor(props) {
     super(props);

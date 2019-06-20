@@ -19,16 +19,12 @@ import {
 export default class ReviewInfoScreen extends React.Component {
 
   static navigationOptions = {
-    title : "lol"
+    header: null
   };
 
   render() {
     return (
       <Container style={styles.container}>
-        <Header>
-          <Text>음식점 등록</Text>
-          <View />
-        </Header>
         <Content>
           <List>
             <ListItem itemDivider />

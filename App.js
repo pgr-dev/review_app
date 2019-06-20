@@ -1,6 +1,9 @@
 import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { AppLoading, Asset, Font, Icon } from 'expo';
+import { AppLoading } from 'expo';
+import * as Icon from '@expo/vector-icons';
+import * as Font from 'expo-font';
+import { Asset } from 'expo-asset';
 import AppNavigator from './navigation/AppNavigator';
 
 // //파이어 베이스 사용

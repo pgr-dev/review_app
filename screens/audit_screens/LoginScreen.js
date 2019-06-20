@@ -19,7 +19,6 @@ const clientId =
 const isAndroid = () => Platform.OS === "android";
 
 export default class App extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -73,31 +72,32 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        {this.state.signedIn ? (
-          <View style={styles.container}>
-            <Text style={styles.header}>Welcome:{this.state.name}</Text>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate("HomeScreen")}
-            >
-              <Image
-                style={styles.image}
-                source={{ uri: this.state.photoUrl }}
+        {this.state.signedIn
+          ? <View style={styles.container}>
+              <Text style={styles.header}>
+                Welcome:{this.state.name}
+              </Text>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate("HomeScreen")}
+              >
+                <Image
+                  style={styles.image}
+                  source={{ uri: this.state.photoUrl }}
+                />
+              </TouchableOpacity>
+            </View>
+          : <View>
+              {this.state.signing
+                ? <ActivityIndicator />
+                : <GoogleSignInButton
+                    onPress={() => this.signIn()}
+                    style={{ flex: 1 }}
+                  />}
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate("HomeScreen")}
+                style={{ flex: 1 }}
               />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View>
-            {this.state.signing ? (
-              <ActivityIndicator />
-            ) : (
-              <GoogleSignInButton onPress={() => this.signIn()} style={{flex : 1}}/>
-              
-            )}
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate("HomeScreen")} style={{flex : 1}}
-            ></TouchableOpacity>
-          </View>
-        )}
+            </View>}
       </View>
     );
   }

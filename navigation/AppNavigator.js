@@ -4,11 +4,7 @@ import {
   createSwitchNavigator,
   createStackNavigator
 } from "react-navigation";
-import {
-  Image,
-  Button,
-  Text
-} from "react-native";
+import { Image, Button, Text, TouchableOpacity } from "react-native";
 import MainTabNavigator from "./MainTabNavigator";
 import ReviewTabNavigator from "./ReviewTabNavigator";
 import StoreScreen from "../screens/review_screens/AddStoreInfoScreen";
@@ -19,56 +15,79 @@ import LoginScreen from "../screens/audit_screens/LoginScreen";
 
 class LogoTitle extends React.Component {
   render() {
-    return (
-      <Text>lol</Text>
-    );
+    return <Text>lol</Text>;
   }
 }
 
-const LoginNavigationOptions = (props) => ({
-  header : null
-})
+const LoginNavigationOptions = props => ({
+  header: null
+});
 
-const MainNavigationOptions = (props) => ({
-  header : null
-})
+const MainNavigationOptions = props => ({
+  header: null
+});
 
-const ReviewNavigationOptions = (props) => ({
+const StoreNavigationOptions = props => ({
+  title: "음식점 등록"
+});
 
-})
-
-const StoreNavigationOptions = (props) => ({
-  headerTitle: <LogoTitle />,
-    headerRight: (
-      <Button
-        onPress={() => alert('This is a button!')}
-        title="Info"
-        color="#fff"
-      />
-    ),
-})
-
-
+const ReviewNavigationOptions = props => ({
+  title: "null",
+  headerRight: (
+    <TouchableOpacity
+      style={{ width: 32, height: 21, marginRight: 16 }}
+      onPress={() => alert("This is a button!")}
+      color="#ffffff"
+    >
+      <Text
+        style={{
+          fontSize: 16,
+          fontWeight: "normal",
+          fontStyle: "normal",
+          lineHeight: 20,
+          letterSpacing: 0,
+          textAlign: "center",
+          color: "#28b4f0"
+        }}
+      >
+        저장
+      </Text>
+    </TouchableOpacity>
+  )
+});
 
 export default createAppContainer(
   createStackNavigator(
     {
-      Login: {screen : LoginScreen, navigationOptions: LoginNavigationOptions},
+      Login: { screen: LoginScreen, navigationOptions: LoginNavigationOptions },
       // Loading : LoadingScreen,
       // Dashboard : DashboardScreen,
-      Main: {screen : MainTabNavigator, navigationOptions: MainNavigationOptions},
-      Review: {screen : ReviewTabNavigator, navigationOptions: ReviewNavigationOptions},
-      Store: {screen : StoreScreen, navigationOptions: StoreNavigationOptions},
+      Main: {
+        screen: MainTabNavigator,
+        navigationOptions: MainNavigationOptions
+      },
+      Store: { screen: StoreScreen, navigationOptions: StoreNavigationOptions },
+      Review: {
+        screen: ReviewTabNavigator,
+        navigationOptions: ReviewNavigationOptions
+      }
     },
     {
       initialRouteName: "Login",
       defaultNavigationOptions: {
         headerStyle: {
-          backgroundColor: "white"
+          backgroundColor: "white",
+          height: 64
         },
         headerTintColor: "black",
         headerTitleStyle: {
-          fontWeight: "bold"
+          fontSize: 16,
+          fontWeight: "500",
+          fontStyle: "normal",
+          lineHeight: 20,
+          letterSpacing: 0,
+          textAlign: "left",
+          color: "#292929"
         }
       }
     }

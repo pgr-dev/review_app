@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   Image,
   Platform,
@@ -11,8 +12,10 @@ import {
   KeyboardAvoidingView,
   AsyncStorage,
   ActivityIndicator,
-  Icon
+  Icon,
+  Dimensions
 } from "react-native";
+
 import {
   Container,
   Header,
@@ -24,7 +27,13 @@ import {
   Button
 } from "native-base";
 
-import { MapView, Marker } from "expo";
+import axios from "axios";
+
+import { Marker } from "expo";
+
+import MapView from "react-native-maps";
+
+const linkdata = require("../../linkdata.json");
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
@@ -33,21 +42,55 @@ export default class HomeScreen extends React.Component {
       storeName: "",
       searched: false,
       searching: false,
-      storeList: [],
+      restaurants: [],
       region: {
         latitude: 35.227703,
         longitude: 126.839799,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421
-      }
+      },
+      superheight : 563
     };
   }
+
+
+  componentDidMount = async () => {
+    try {
+      console.log("requesting started...");
+      let geoURL =
+        "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?request=coordsToaddr&coords=129.1133590,35.2982699&sourcecrs=epsg:4326&output=json&orders=legalcode";
+      // "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc" +
+      // "?coords=128.12345,37.98775" +
+      // "&sourcecrs=epsg:3857" +
+      // "&targetcrs=epsg:3857" +
+      // "&orders=legalcode" +
+      // "&ouput=json"; 이거 지금 안됨...
+      console.log(geoURL);
+      console.log("awaiting response...");
+
+      let response = await fetch(geoURL, {
+        method: "GET",
+        headers: {
+          "X-NCP-APIGW-API-KEY": "81vlHVxNFH0NjkKz10aKLOdVA0lBtwy8m7NnNjZh",
+          "X-NCP-APIGW-API-KEY-ID": "cjstpq2aer"
+        }
+      });
+      let gData = await response.json();
+      if (gData) {
+        console.log("received response...");
+        console.log(gData);
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   static navigationOptions = {
     header: null
   };
 
-  // getInitialState() {
+  // getInitialState() { 이것도 지금 안됨
   //   return {
   //     region: {
   //       latitude: 35.227703,
@@ -66,85 +109,131 @@ export default class HomeScreen extends React.Component {
   //render start--------------------------------------------------------------------------------------------
 
   render() {
+    const { storeName, searched, searching, restaurants, region } = this.state;
+
     return (
-      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-        <ScrollView style={this.state.searched ? {flex:0.4, maxHeight: 281} : styles.mapHighConatiner}>
-          <MapView
-            style={styles.mapcontainer}
-            initialRegion={this.state.region}
-            onRegionChange={this._onRegionChange}
+      <View style={styles.container}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior="padding"
+          enabled
+        >
+          <ScrollView
+            style={
+              searched ? { flex: 0.4, maxHeight: 281 } : styles.mapHighConatiner
+            }
+            onLayout={event => {this.setState({
+              superheight : event.nativeEvent.layout.height
+            })}
+            }
           >
-            {this.state.searched
-              ? this.state.storeList.map(storeList =>
+            <MapView
+              style={{
+                height : this.state.superheight
+              }}
+              initialRegion={region}
+              onRegionChange={this._onRegionChange}
+            >
+              {searched ? (
+                restaurants.map(markerinfo => (
                   <MapView.Marker
-                    key={storeList.id}
-                    coordinate={storeList.marker.LatLng}
-                    title={storeList.title}
-                    description={storeList.marker.description}
+                    key={markerinfo.order}
+                    coordinate={markerinfo.marker.LatLng}
+                    title={markerinfo.name}
+                    description={markerinfo.marker.branch_name}
                   />
-                )
-              : <View />}
-          </MapView>
-        </ScrollView>
-        <View style={styles.searchBarContainer}>
-          <TextInput
-            value={this.state.storeName}
-            style={styles.searchBarTextInput}
-            placeholder="펭귄리포트"
-            returnKeyType={"done"}
-            autoCorrect={false}
-            onChangeText={this._searchTextChange}
-            onSubmitEditing={this._searchStoreName}
-          />
-          {this.state.searched
-            ? <Button
+                ))
+              ) : (
+                <View />
+              )}
+            </MapView>
+          </ScrollView>
+
+          <View style={styles.searchBarContainer}>
+            <TextInput
+              value={storeName}
+              style={styles.searchBarTextInput}
+              placeholder="펭귄리포트"
+              returnKeyType={"done"}
+              autoCorrect={false}
+              onChangeText={this._searchTextChange}
+              onSubmitEditing={this._searchStoreName}
+            />
+            {searched ? (
+              <Button
                 style={styles.searchBarButton}
                 onPressOut={this._searchCancled}
               />
-            : <View />}
-        </View>
-        {this.state.searched //서치 후 나타나는 창
-          ? <ScrollView style={{ flex : 0.4, maxHeight: 282 }}>
-              <List style={styles.searchedContainer}>
-                {this.state.storeList.map(store =>
-                  <ListItem
-                    key={store.id}
-                    style={styles.ListItem}
-                    onPress={() => this.props.navigation.push("Store")}
-                  >
-                    <Left>
-                      <View>
-                        <Text>
-                        {store.id}.{store.title}
-                        </Text>
-                        <Text>
-                          {store.location}
-                        </Text>
+            ) : (
+              <View style={{height : 0}}/>
+            )}
+          </View>
+        </KeyboardAvoidingView>
+
+        {searched ? ( //서치 후 나타나는 창
+          <ScrollView style={{ flex: 0.4, maxHeight: 282 }}>
+            <List style={styles.searchedContainer}>
+              {restaurants.map(store => (
+                <ListItem
+                  key={store.order}
+                  style={styles.ListItem}
+                  onPress={() =>
+                    this.props.navigation.push("Store", {
+                      itemId: store.id
+                    })
+                  }
+                >
+                  <Left>
+                    <View>
+                      <Text>
+                        {store.order}.{store.name}
+                        {store.branch_name ? store.branch_name : ""}
+                      </Text>
+                      <Text>{store.address}</Text>
+                    </View>
+                  </Left>
+                  <Right>
+                    <TouchableOpacity
+                      onPress={() =>
+                        this.props.navigation.navigate("Review", {
+                          itemId: store.id
+                        })
+                      }
+                    >
+                      <View
+                        style={{
+                          height: 50,
+                          width: 50,
+                          backgroundColor: "red"
+                        }}
+                      >
+                        {/* <StoreStatus                              가게의 종류를 보여주는 버튼 구현 예정
+                          isWritten={store.status.isWritten}
+                          storeType={store.status.storeType}
+                        /> */}
                       </View>
-                    </Left>
-                    <Right>
-                      <View>
-                        <StoreStatus isWritten={store.status.isWritten} storeType={store.status.storeType}></StoreStatus>
-                      </View>
-                    </Right>
-                  </ListItem>
-                )}
-              </List>
-            </ScrollView>
-          : this.state.searching
-            ? <View style={{ height: 50 }}>
-                <ActivityIndicator />
-              </View>
-            : <View style={{ height: 0 }}/>}
-      </KeyboardAvoidingView>
+                    </TouchableOpacity>
+                  </Right>
+                </ListItem>
+              ))}
+            </List>
+          </ScrollView>
+        ) : searching ? (
+          <View style={{ height: 50 }}>
+            <ActivityIndicator />
+          </View>
+        ) : (
+          <View style={{ height: 0 }} />
+        )}
+      </View>
     );
   }
 
   //function start----------------------------  ------------------------------------------------------------------------------------------------------------------------
 
-  _searchTextChange = text => {
+  _searchTextChange = async(text) => {
     // 텍스트 변경 될 시 state인 storeName 현재 값인 text를 넣는다.
-    this.setState({
+    await this.setState({
       storeName: text
     });
 
@@ -152,7 +241,6 @@ export default class HomeScreen extends React.Component {
   };
 
   _searchCancled = () => {
-    // 텍스트 인풋을 벗어난 클릭 시 state인 storeName을 초기화 시킨다.
     this.setState({
       storeName: "",
       searched: false,
@@ -166,40 +254,29 @@ export default class HomeScreen extends React.Component {
       searched: false,
       searching: true
     });
+
     //서버와의 연동
 
-    try {
-      let response = await fetch(
-        "https://next.json-generator.com/api/json/get/N1QU9c8d8"
-      );
-      let rData = await response.json();
-      this.setState({
-        storeList: rData.storeList,
-        searched: true,
-        searching: false
-      });
-    } catch (error) {
-      console.error(error);
-    }
-
-    // try {
-    //   const URL = ""; //서버 주소
+    // try {                    axios를 사용한 통신
+    //   let URL =
+    //     "https://yzygpacb33.execute-api.us-east-1.amazonaws.com/dev" +
+    //     this.state.storeName; //서버 주소
     //   console.log(URL);
-
     //   console.log("awaiting response...");
-    //   axios
-    //     .post(URL, { data: this.state.storeName })
+
+    //   axios({
+    //     method: "get",
+    //     url: URL,
+    //     timeout: 10000 // 10초 이내에 응답이 오지 않으면 에러로 간주
+    //   })
     //     .then(rData => {
     //       console.log("received response...");
-
-    //       console.log(JSON.stringify(rData.data));
-
-    //       if (rData.data) {
+    //       console.log(JSON.stringify(rData));
+    //       if (rData) {
     //         this.setState({
     //           searched: true,
     //           searching: false,
-    //           rData: rData,
-    //           markers: rData.marker
+    //           restaurants: rData.restaurants
     //         });
     //         return;
     //       } else {
@@ -210,16 +287,52 @@ export default class HomeScreen extends React.Component {
     //       }
     //     })
     //     .catch(err => console.log(err));
-    // } catch (error) {}
+    // } catch (error) {
+    //   console.error(error);
+    // }
+
+    try {
+      let URL = linkdata.apiLink + "?input=" + this.state.storeName; //서버 주소
+      console.log(URL);
+      console.log("awaiting response...");
+
+      let response = await fetch(URL, {
+        method: "GET"
+      });
+      let rData = await response.json();
+      if (rData) {
+        console.log("received response...");
+        console.log(rData);
+        this.setState({
+          searched: true,
+          searching: false,
+          restaurants: rData.restaurants
+        });
+        console.log(this.state.restaurants, this.state.searched);
+        return;
+      } else {
+        this.setState({
+          searched: false,
+          searching: false
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 }
 
-
-class StoreStatus extends React.Component{
+class StoreStatus extends React.Component {
   render() {
     return (
-      <TouchableOpacity style={this.props.isWritten ? styles.inabledStatus : styles.disabledStatus}>
-        {this.props.storeType.map(storeType => <Text key={storeType.toString()}>{storeType}</Text>)}
+      <TouchableOpacity
+        style={
+          this.props.isWritten ? styles.inabledStatus : styles.disabledStatus
+        }
+      >
+        {this.props.storeType.map(storeType => (
+          <Text key={storeType.toString()}>{storeType}</Text>
+        ))}
       </TouchableOpacity>
     );
   }
@@ -230,19 +343,17 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     backgroundColor: "#fff",
-    justifyContent : "flex-start",
-    alignItems : "stretch"
+    justifyContent: "flex-start",
+    alignItems: "stretch"
   },
   mapHighConatiner: {
     flex: 0.9
   },
-  mapcontainer: {
-    height: 600
-  },
   searchBarContainer: {
     position: "relative",
-    // flex: 0.1,
-    minHeight : 60,
+    flex: 0.1,
+    minHeight: 60,
+    maxHeight: 60,
     borderTopColor: "rgba(209,209,214,1)",
     borderStyle: "solid",
     borderTopWidth: 0.5,
@@ -259,6 +370,7 @@ const styles = StyleSheet.create({
   },
   searchBarTextInput: {
     position: "absolute",
+    width: 300,
     bottom: 16,
     left: 24,
     fontSize: 16,
@@ -276,20 +388,20 @@ const styles = StyleSheet.create({
   ListItem: {
     height: 75
   },
-  inabledStatus:{
-    width : 60,
-    height : 30,
-    borderRadius : 15,
-    backgroundColor : "#f0faff",
-    color : "rgba(255, 255, 255, 0)",
-    flexDirection: "row",
+  inabledStatus: {
+    width: 60,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#f0faff",
+    color: "rgba(255, 255, 255, 0)",
+    flexDirection: "row"
   },
-  disabledStatus:{
-    width : 60,
-    height : 30,
-    borderRadius : 15,
-    backgroundColor : "#f6f6fa",
-    color : "rgba(4, 4, 15, 0.45)",
-    flexDirection: "row",
-  },
+  disabledStatus: {
+    width: 60,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#f6f6fa",
+    color: "rgba(4, 4, 15, 0.45)",
+    flexDirection: "row"
+  }
 });
