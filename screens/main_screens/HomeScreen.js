@@ -40,8 +40,10 @@ export default class HomeScreen extends React.Component {
     super(props);
     this.state = {
       storeName: "",
-      searched: false,
-      searching: false,
+      textSearched: false,
+      textSearching: false,
+      mapSearched: false,
+      mapSearching: false,
       restaurants: [],
       region: {
         latitude: 35.227703,
@@ -49,57 +51,13 @@ export default class HomeScreen extends React.Component {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421
       },
-      superheight : 563
+      superheight: 563
     };
   }
-
-
-  componentDidMount = async () => {
-    try {
-      console.log("requesting started...");
-      let geoURL =
-        "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?request=coordsToaddr&coords=129.1133590,35.2982699&sourcecrs=epsg:4326&output=json&orders=legalcode";
-      // "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc" +
-      // "?coords=128.12345,37.98775" +
-      // "&sourcecrs=epsg:3857" +
-      // "&targetcrs=epsg:3857" +
-      // "&orders=legalcode" +
-      // "&ouput=json"; 이거 지금 안됨...
-      console.log(geoURL);
-      console.log("awaiting response...");
-
-      let response = await fetch(geoURL, {
-        method: "GET",
-        headers: {
-          "X-NCP-APIGW-API-KEY": "81vlHVxNFH0NjkKz10aKLOdVA0lBtwy8m7NnNjZh",
-          "X-NCP-APIGW-API-KEY-ID": "cjstpq2aer"
-        }
-      });
-      let gData = await response.json();
-      if (gData) {
-        console.log("received response...");
-        console.log(gData);
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   static navigationOptions = {
     header: null
   };
-
-  // getInitialState() { 이것도 지금 안됨
-  //   return {
-  //     region: {
-  //       latitude: 35.227703,
-  //       longitude: 126.839799,
-  //       latitudeDelta: 0.0922,
-  //       longitudeDelta: 0.0421
-  //     }
-  //   };
-  // }
 
   _onRegionChange = region => {
     this.setState({ region: region });
@@ -109,7 +67,15 @@ export default class HomeScreen extends React.Component {
   //render start--------------------------------------------------------------------------------------------
 
   render() {
-    const { storeName, searched, searching, restaurants, region } = this.state;
+    const {
+      storeName,
+      textSearched,
+      textSearching,
+      restaurants,
+      region,
+      mapSearched,
+      mapSearching
+    } = this.state;
 
     return (
       <View style={styles.container}>
@@ -120,21 +86,26 @@ export default class HomeScreen extends React.Component {
         >
           <ScrollView
             style={
-              searched ? { flex: 0.4, maxHeight: 281 } : styles.mapHighConatiner
+              textSearched
+                ? { flex: 0.4, maxHeight: 281 }
+                : styles.mapHighConatiner
             }
-            onLayout={event => {this.setState({
-              superheight : event.nativeEvent.layout.height
-            })}
-            }
+            onLayout={event => {
+              this.setState({
+                superheight: event.nativeEvent.layout.height
+              });
+            }}
           >
             <MapView
               style={{
-                height : this.state.superheight
+                height: this.state.superheight
               }}
               initialRegion={region}
               onRegionChange={this._onRegionChange}
+              onLongPress={(event) => this._mapStoreSearch(event.nativeEvent)}
+              loadingEnabled={true}
             >
-              {searched ? (
+              {textSearched ? (
                 restaurants.map(markerinfo => (
                   <MapView.Marker
                     key={markerinfo.order}
@@ -159,22 +130,22 @@ export default class HomeScreen extends React.Component {
               onChangeText={this._searchTextChange}
               onSubmitEditing={this._searchStoreName}
             />
-            {searched ? (
+            {textSearched ? (
               <Button
                 style={styles.searchBarButton}
                 onPressOut={this._searchCancled}
               />
             ) : (
-              <View style={{height : 0}}/>
+              <View style={{ height: 0 }} />
             )}
           </View>
         </KeyboardAvoidingView>
 
-        {searched ? ( //서치 후 나타나는 창
+        {textSearched ? ( //서치 후 나타나는 창
           <ScrollView style={{ flex: 0.4, maxHeight: 282 }}>
-            <List style={styles.searchedContainer}>
+            <View style={styles.textSearchedContainer}>
               {restaurants.map(store => (
-                <ListItem
+                <TouchableOpacity
                   key={store.order}
                   style={styles.ListItem}
                   onPress={() =>
@@ -183,16 +154,14 @@ export default class HomeScreen extends React.Component {
                     })
                   }
                 >
-                  <Left>
-                    <View>
-                      <Text>
-                        {store.order}.{store.name}
-                        {store.branch_name ? store.branch_name : ""}
-                      </Text>
-                      <Text>{store.address}</Text>
-                    </View>
-                  </Left>
-                  <Right>
+                  <View>
+                    <Text>
+                      {store.order}.{store.name}
+                      {store.branch_name ? store.branch_name : ""}
+                    </Text>
+                    <Text>{store.address}</Text>
+                  </View>
+                  <View>
                     <TouchableOpacity
                       onPress={() =>
                         this.props.navigation.navigate("Review", {
@@ -213,12 +182,12 @@ export default class HomeScreen extends React.Component {
                         /> */}
                       </View>
                     </TouchableOpacity>
-                  </Right>
-                </ListItem>
+                  </View>
+                </TouchableOpacity>
               ))}
-            </List>
+            </View>
           </ScrollView>
-        ) : searching ? (
+        ) : textSearching ? (
           <View style={{ height: 50 }}>
             <ActivityIndicator />
           </View>
@@ -231,96 +200,123 @@ export default class HomeScreen extends React.Component {
 
   //function start----------------------------  ------------------------------------------------------------------------------------------------------------------------
 
-  _searchTextChange = async(text) => {
+  _searchTextChange = async text => {
     // 텍스트 변경 될 시 state인 storeName 현재 값인 text를 넣는다.
     await this.setState({
       storeName: text
     });
 
-    console.log(this.state.storeName);
+    console.log("현재 storeName : " + this.state.storeName);
   };
 
   _searchCancled = () => {
     this.setState({
       storeName: "",
-      searched: false,
-      searching: false
+      textSearched: false,
+      textSearching: false
     });
-    console.log(this.state.storeName);
+    console.log("현재 storeName : " + this.state.storeName);
   };
 
   _searchStoreName = async () => {
     this.setState({
-      searched: false,
-      searching: true
+      textSearched: false,
+      textSearching: true
     });
 
-    //서버와의 연동
-
-    // try {                    axios를 사용한 통신
-    //   let URL =
-    //     "https://yzygpacb33.execute-api.us-east-1.amazonaws.com/dev" +
-    //     this.state.storeName; //서버 주소
-    //   console.log(URL);
-    //   console.log("awaiting response...");
-
-    //   axios({
-    //     method: "get",
-    //     url: URL,
-    //     timeout: 10000 // 10초 이내에 응답이 오지 않으면 에러로 간주
-    //   })
-    //     .then(rData => {
-    //       console.log("received response...");
-    //       console.log(JSON.stringify(rData));
-    //       if (rData) {
-    //         this.setState({
-    //           searched: true,
-    //           searching: false,
-    //           restaurants: rData.restaurants
-    //         });
-    //         return;
-    //       } else {
-    //         this.setState({
-    //           searched: false,
-    //           searching: false
-    //         });
-    //       }
-    //     })
-    //     .catch(err => console.log(err));
-    // } catch (error) {
-    //   console.error(error);
-    // }
-
     try {
-      let URL = linkdata.apiLink + "?input=" + this.state.storeName; //서버 주소
-      console.log(URL);
-      console.log("awaiting response...");
+      let URL = linkdata.apiLink + "/restaurants/?input=" + this.state.storeName; //서버 주소
+      console.log("통신 대상 URL : " + URL);
+      console.log("통신 목적 : 검색어 전달 후 검색 결과 받기");
+      console.log(
+        "\n*************************서버 응답 대기중*************************\n"
+      );
 
       let response = await fetch(URL, {
         method: "GET"
       });
       let rData = await response.json();
-      if (rData) {
-        console.log("received response...");
-        console.log(rData);
+      if (rData && rData.restaurants) {
+        console.log(
+          "\n***********************서버로부터 응답 받음***********************\n"
+        );
+        console.log("데이터 확인!\n서버로부터 받은 데이터 : ");
+        console.log(rData)
+        console.log("데이터 끝\n");
         this.setState({
-          searched: true,
-          searching: false,
+          textSearched: true,
+          textSearching: false,
           restaurants: rData.restaurants
         });
-        console.log(this.state.restaurants, this.state.searched);
+        console.log(
+          "restaurants에 저장하는 데이터 : ");
+        console.log(this.state.restaurants);
+        console.log("데이터 끝\n");
+        console.log("textSearched  상태 : " + this.state.textSearched);
+        console.log("textSearching 상태 : " + this.state.textSearching);
         return;
       } else {
+        console.log(
+          "\n***********************서버로부터 응답 실패***********************\n"
+        );
+        console.log(
+          "\n***********************!!실패실패실패실패!!***********************\n"
+        );
+
         this.setState({
-          searched: false,
-          searching: false
+          textSearched: false,
+          textSearching: false
         });
+        console.log("textSearched  상태 : " + this.state.textSearched);
+        console.log("textSearching 상태 : " + this.state.textSearching);
       }
     } catch (error) {
       console.error(error);
     }
   };
 }
+
+_mapStoreSearch = async (event) => {
+
+  console.log(event.nativeEvent.coordinate)
+
+  try {
+    let geoURL =
+      "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?request=coordsToaddr&coords=129.1133590,35.2982699&sourcecrs=epsg:4326&output=json&orders=legalcode";
+    // "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc" +
+    // "?coords=128.12345,37.98775" +
+    // "&sourcecrs=epsg:3857" +
+    // "&targetcrs=epsg:3857" +
+    // "&orders=legalcode" +
+    // "&ouput=json"; 이거 지금 안됨...
+
+    console.log("통신 대상 URL : " + geoURL);
+    console.log("통신 목적 : 리버스 지오 코딩 주소 반환");
+    console.log(
+      "\n*************************서버 응답 대기중*************************\n"
+    );
+
+    let response = await fetch(geoURL, {
+      method: "GET",
+      headers: {
+        "X-NCP-APIGW-API-KEY": "81vlHVxNFH0NjkKz10aKLOdVA0lBtwy8m7NnNjZh",
+        "X-NCP-APIGW-API-KEY-ID": "cjstpq2aer"
+      }
+    });
+    let gData = await response.json();
+    if (gData) {
+      console.log(
+        "\n***********************서버로부터 응답 받음***********************\n"
+      );
+      console.log("데이터 확인!\n서버로부터 받은 데이터 : ");
+      console.log(gData);
+      console.log("데이터 끝\n");
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 class StoreStatus extends React.Component {
   render() {
@@ -384,7 +380,7 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20
   },
-  searchedContainer: {},
+  textSearchedContainer: {},
   ListItem: {
     height: 75
   },

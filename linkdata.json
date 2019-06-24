@@ -1,4 +1,4 @@
 {
-  "apiLink": "https://118gi8qm0i.execute-api.ap-northeast-2.amazonaws.com/dev-test/restaurants",
+  "apiLink": "http://ec2-54-180-97-71.ap-northeast-2.compute.amazonaws.com:8000/api",
   "geoURL" : "gg"
 }
