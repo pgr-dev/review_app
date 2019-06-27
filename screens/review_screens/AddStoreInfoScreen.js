@@ -7,20 +7,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Alert
 } from "react-native";
-import {
-  Container,
-  Header,
-  Content,
-  List,
-  ListItem,
-  Left,
-  Body,
-  Right,
-  Button,
-  Icon
-} from "native-base";
+import { Container, Header, Content, List, ListItem, Left, Body, Right, Button, Icon } from "native-base";
 
 import * as ImagePicker from "expo-image-picker";
 
@@ -30,26 +20,43 @@ import { RNS3 } from "react-native-aws3";
 
 import { uuidv3 } from "uuid/v3";
 
+import PropTypes from "prop-types";
+
 const linkdata = require("../../linkdata.json");
 
-// class ItemList extends React.Component { 차후 리팩토링용 더미데이터, 작성중 상황에 따라 Text와 TextInput 변경 기능 추가 예정
-//   render() {
-//     const { storeDataWriting } = this.state;
-//     const { placeholderName, valueName } = this.props;
+// class ItemList extends React.Component {
+//   //차후 리팩토링용 더미데이터
 
-//     return storeDataWriting
-//       ? <ListItem>
-//           <TextInput
-//             placeholder="주소"
-//             value={storeInfo.get("address")}
-//             onChangeText={this._addressTextChange}
-//           />
-//         </ListItem>
-//       : <ListItem>
-//           <Text>
-//             {storeInfo.get("address")}
-//           </Text>
-//         </ListItem>;
+//   constructor(props) {
+//     //
+//     super(props);
+//     this.state = { storeInfo: storeInfo, text: props.text };
+//   }
+
+//   static propTypes = {
+//     placeholderName: PropTypes.string.isRequired,
+//     valueName: PropTypes.string.isRequired,
+//     order: PropTypes.number.isRequired,
+
+//   };
+
+//   render() {
+//     const { placeholderName, valueName, order } = this.props;
+//     <View>
+//       <TextInput
+//         placeholder = {placeholderName}
+//         value={storeInfo.get(valueName)}
+//         onChangeText={this._TextChange(valueName)}
+//         returnKeyType={"next"}
+//         onSubmitEditing={() => {
+//           this.TextInput1.focus();
+//         }}
+//         ref={input => {
+//           this.TextInput2 = input;
+//         }}
+//         blurOnSubmit={false}
+//       />
+//     </View>;
 //   }
 // }
 
@@ -75,14 +82,7 @@ export default class ReviewInfoScreen extends React.Component {
   };
 
   render() {
-    let {
-      itemID,
-      storeDataReceivied,
-      storeInfo,
-      storeImage,
-      IsStoreInfoChanged,
-      IsStoreImageChanged
-    } = this.state;
+    let { itemID, storeDataReceivied, storeInfo, storeImage, IsStoreInfoChanged, IsStoreImageChanged } = this.state;
 
     return (
       <KeyboardAvoidingView style={styles.container}>
@@ -95,21 +95,13 @@ export default class ReviewInfoScreen extends React.Component {
                 </ListItem>
                 <ListItem style={{ height: 293 }} onPress={this._pickImage}>
                   {storeImage ? (
-                    <Image
-                      source={{ uri: storeImage.uri }}
-                      style={{ width: 200, height: 200 }}
-                    />
+                    <Image source={{ uri: storeImage.uri }} style={{ width: 200, height: 200 }} />
                   ) : (
                     <Text>take your picture</Text>
                   )}
                 </ListItem>
-                <ListItem
-                  itemDivider
-                  style={{ height: 75, flexDirection: "column" }}
-                >
-                  <Text style={styles.itemDivider}>
-                    간판의 내용이 모두 보이도록 사진을 찍어 주세요.
-                  </Text>
+                <ListItem itemDivider style={{ height: 75, flexDirection: "column" }}>
+                  <Text style={styles.itemDivider}>간판의 내용이 모두 보이도록 사진을 찍어 주세요.</Text>
                   <Text style={styles.itemDivider}>주소</Text>
                 </ListItem>
                 <ListItem>
@@ -166,7 +158,9 @@ export default class ReviewInfoScreen extends React.Component {
                       this.TextInput3 = input;
                     }}
                     returnKeyType={"next"}
-                    // onSubmitEditing={() => { this.TextInput.focus(); }}
+                    onSubmitEditing={() => {
+                      this.TouchableOpacity.focus();
+                    }}
                     blurOnSubmit={false}
                   />
                 </ListItem>
@@ -188,18 +182,17 @@ export default class ReviewInfoScreen extends React.Component {
         <View style={styles.registerButtonContainer}>
           {IsStoreInfoChanged ? (
             <TouchableOpacity
-              onPress={this._saveStoreData}
+              ref={input => {
+                this.TouchableOpacity = input;
+              }}
+              onPress={this._saveAlert}
               style={styles.registerButton}
             >
-              <Text style={{ color: "white", textAlign: "center" }}>
-                음식점 등록
-              </Text>
+              <Text style={{ color: "white", textAlign: "center" }}>음식점 등록</Text>
             </TouchableOpacity>
           ) : (
             <View style={styles.noneregisterButton}>
-              <Text style={{ color: "white", textAlign: "center" }}>
-                음식점 등록
-              </Text>
+              <Text style={{ color: "white", textAlign: "center" }}>음식점 등록</Text>
             </View>
           )}
         </View>
@@ -232,31 +225,20 @@ export default class ReviewInfoScreen extends React.Component {
   _networkingStoreData = async () => {
     //서버로부터 정보를 받음
 
-    const {
-      itemID,
-      storeInfo,
-      storeDataReceivied,
-      storeImage,
-      IsStoreImageChanged,
-      IsStoreInfoChanged
-    } = this.state;
+    const { itemID, storeInfo, storeDataReceivied, storeImage, IsStoreImageChanged, IsStoreInfoChanged } = this.state;
 
     try {
       let URL = linkdata.apiLink + "/restaurants/" + itemID; //요청할 서버 주소
       console.log("통신 대상 URL : " + URL);
       console.log("통신 목적 : 가게 ID에 따른 가게 정보 받아오기");
-      console.log(
-        "\n*************************서버 응답 대기중*************************\n"
-      );
+      console.log("\n*************************서버 응답 대기중*************************\n");
 
       let response = await fetch(URL, {
         method: "GET"
       });
       let sData = await response.json();
       if (sData) {
-        console.log(
-          "\n***********************서버로부터 응답 받음***********************\n"
-        );
+        console.log("\n***********************서버로부터 응답 받음***********************\n");
         console.log("데이터 확인!\n서버로부터 받은 데이터를 아래에 표시");
         console.log(sData);
         console.log("데이터 끝\n");
@@ -287,17 +269,26 @@ export default class ReviewInfoScreen extends React.Component {
     }
   };
 
+  _saveAlert = () => {
+    Alert.alert(
+      "저장하시겠습니까?",
+      "",
+      [
+        { text: "네", onPress: this._saveStoreData },
+        {
+          text: "아니오",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
   _saveStoreData = async () => {
     //서버로 정보를 보냄
 
-    const {
-      itemID,
-      storeInfo,
-      storeDataReceivied,
-      storeImage,
-      IsStoreImageChanged,
-      IsStoreInfoChanged
-    } = this.state;
+    const { itemID, storeInfo, storeDataReceivied, storeImage, IsStoreImageChanged, IsStoreInfoChanged } = this.state;
 
     try {
       if (IsStoreInfoChanged) {
@@ -324,16 +315,11 @@ export default class ReviewInfoScreen extends React.Component {
           console.log("보낼 사진 데이터 설정 확인 : ");
           console.log(options);
           console.log("데이터 끝\n");
-          console.log(
-            "\n*************************서버 응답 대기중*************************\n"
-          );
+          console.log("\n*************************서버 응답 대기중*************************\n");
 
           RNS3.put(file, options).then(response => {
-            if (response.status !== 201)
-              throw new Error("Failed to upload image to S3");
-            console.log(
-              "\n***********************서버로부터 응답 받음***********************\n"
-            );
+            if (response.status !== 201) throw new Error("Failed to upload image to S3");
+            console.log("\n***********************서버로부터 응답 받음***********************\n");
             console.log("받은 응답 확인 : ");
             console.log(response.body);
             console.log("데이터 끝\n");
@@ -356,9 +342,7 @@ export default class ReviewInfoScreen extends React.Component {
         let URL = linkdata.apiLink + "/restaurants/" + itemID + "/"; //서버 주소
         console.log("통신 대상 URL : " + URL);
         console.log("통신 목적 : 가게 정보 수정 후 서버에 업로드");
-        console.log(
-          "\n*************************서버 응답 대기중*************************\n"
-        );
+        console.log("\n*************************서버 응답 대기중*************************\n");
         console.log(storeInfo);
         console.log(JSON.stringify(storeInfo));
 
@@ -371,9 +355,7 @@ export default class ReviewInfoScreen extends React.Component {
           body: JSON.stringify(storeInfo)
         });
         if (response) {
-          console.log(
-            "\n***********************서버로부터 응답 받음***********************\n"
-          );
+          console.log("\n***********************서버로부터 응답 받음***********************\n");
           console.log("받은 응답 확인 : ");
           console.log(response);
           console.log("데이터 끝\n");
@@ -384,12 +366,8 @@ export default class ReviewInfoScreen extends React.Component {
           console.log("IsStoreInfoChanged  상태: " + IsStoreInfoChanged);
           console.log("IsStoreImageChanged 상태: " + IsStoreImageChanged);
         } else {
-          console.log(
-            "\n***********************서버로부터 응답 실패***********************\n"
-          );
-          console.log(
-            "\n***********************!!실패실패실패실패!!***********************\n"
-          );
+          console.log("\n***********************서버로부터 응답 실패***********************\n");
+          console.log("\n***********************!!실패실패실패실패!!***********************\n");
 
           this.setState({
             IsStoreInfoChanged: false,
@@ -407,13 +385,14 @@ export default class ReviewInfoScreen extends React.Component {
   };
 
   //아래 코드들 리팩토링 필수
+
   _addressTextChange = async text => {
     await this.setState({
       storeInfo: this.state.storeInfo.set("address", text),
       IsStoreInfoChanged: true
     });
 
-    console.log(this.state.storeInfo.get("address"));
+    console.log("현재 주소 : " + this.state.storeInfo.get("address"));
   };
 
   _floorTextChange = async text => {
@@ -422,7 +401,7 @@ export default class ReviewInfoScreen extends React.Component {
       IsStoreInfoChanged: true
     });
 
-    console.log(this.state.storeInfo.get("floor"));
+    console.log("현재 층 : " + this.state.storeInfo.get("floor"));
   };
 
   _nameTextChange = async text => {
@@ -431,7 +410,7 @@ export default class ReviewInfoScreen extends React.Component {
       IsStoreInfoChanged: true
     });
 
-    console.log(this.state.storeInfo.get("name"));
+    console.log("현재 가게이름 : " + this.state.storeInfo.get("name"));
   };
 
   _branch_nameTextChange = async text => {
@@ -440,7 +419,7 @@ export default class ReviewInfoScreen extends React.Component {
       IsStoreInfoChanged: true
     });
 
-    console.log(this.state.storeInfo.get("branch_name"));
+    console.log("현재 가맹점 이름 : " + this.state.storeInfo.get("branch_name"));
   };
 }
 

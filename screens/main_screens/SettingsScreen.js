@@ -2,16 +2,7 @@ import React from "react";
 
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
-import {
-  Container,
-  Header,
-  Content,
-  List,
-  ListItem,
-  Left,
-  Right,
-  Button
-} from "native-base";
+import { Container, Header, Content, List, ListItem, Left, Right, Button } from "native-base";
 
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
@@ -25,10 +16,7 @@ export default class SettingsScreen extends React.Component {
       <View style={styles.container}>
         <View style={styles.infoContainer}>
           <View style={styles.imageContainer}>
-            <Image
-              source={require("../../assets/images/robot-dev.png")}
-              style={styles.image}
-            />
+            <Image source={require("../../assets/images/robot-dev.png")} style={styles.image} />
             <Text style={styles.reviewer}>리뷰어</Text>
             <Text style={styles.reviewerName}>젠투펭귄</Text>
           </View>

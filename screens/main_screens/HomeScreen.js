@@ -16,22 +16,15 @@ import {
   Dimensions
 } from "react-native";
 
-import {
-  Container,
-  Header,
-  Content,
-  List,
-  ListItem,
-  Left,
-  Right,
-  Button
-} from "native-base";
+import { Container, Header, Content, List, ListItem, Left, Right, Button } from "native-base";
 
 import axios from "axios";
 
 import { Marker } from "expo";
 
 import MapView from "react-native-maps";
+
+import StoreStatus from "./mainScreenClasses/StoreStatus";
 
 const linkdata = require("../../linkdata.json");
 
@@ -67,29 +60,13 @@ export default class HomeScreen extends React.Component {
   //render start--------------------------------------------------------------------------------------------
 
   render() {
-    const {
-      storeName,
-      textSearched,
-      textSearching,
-      restaurants,
-      region,
-      mapSearched,
-      mapSearching
-    } = this.state;
+    const { storeName, textSearched, textSearching, restaurants, region, mapSearched, mapSearching } = this.state;
 
     return (
       <View style={styles.container}>
-        <KeyboardAvoidingView
-          style={styles.container}
-          behavior="padding"
-          enabled
-        >
+        <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
           <ScrollView
-            style={
-              textSearched
-                ? { flex: 0.4, maxHeight: 281 }
-                : styles.mapHighConatiner
-            }
+            style={textSearched ? { flex: 0.4, maxHeight: 281 } : styles.mapHighConatiner}
             onLayout={event => {
               this.setState({
                 superheight: event.nativeEvent.layout.height
@@ -102,7 +79,7 @@ export default class HomeScreen extends React.Component {
               }}
               initialRegion={region}
               onRegionChange={this._onRegionChange}
-              onLongPress={(event) => this._mapStoreSearch(event.nativeEvent)}
+              onLongPress={event => this._mapStoreSearch(event.nativeEvent)}
               loadingEnabled={true}
             >
               {textSearched ? (
@@ -131,10 +108,7 @@ export default class HomeScreen extends React.Component {
               onSubmitEditing={this._searchStoreName}
             />
             {textSearched ? (
-              <Button
-                style={styles.searchBarButton}
-                onPressOut={this._searchCancled}
-              />
+              <Button style={styles.searchBarButton} onPressOut={this._searchCancled} />
             ) : (
               <View style={{ height: 0 }} />
             )}
@@ -161,27 +135,13 @@ export default class HomeScreen extends React.Component {
                     </Text>
                     <Text>{store.address}</Text>
                   </View>
+
                   <View>
-                    <TouchableOpacity
-                      onPress={() =>
-                        this.props.navigation.navigate("Review", {
-                          itemId: store.id
-                        })
-                      }
-                    >
-                      <View
-                        style={{
-                          height: 50,
-                          width: 50,
-                          backgroundColor: "red"
-                        }}
-                      >
-                        {/* <StoreStatus                              가게의 종류를 보여주는 버튼 구현 예정
-                          isWritten={store.status.isWritten}
-                          storeType={store.status.storeType}
-                        /> */}
-                      </View>
-                    </TouchableOpacity>
+                    <StoreStatus
+                      possibleReviewType={store.status.possible_review_type}
+                      registeredReviewType={store.status.registered_review_type}
+                      itemId={store.id}
+                    />
                   </View>
                 </TouchableOpacity>
               ))}
@@ -219,56 +179,51 @@ export default class HomeScreen extends React.Component {
   };
 
   _searchStoreName = async () => {
+    let { storeName, textSearched, textSearching, restaurants } = this.state;
+
     this.setState({
+      restaurants: [],
       textSearched: false,
       textSearching: true
     });
+    console.log(restaurants);
 
     try {
-      let URL = linkdata.apiLink + "/restaurants/?input=" + this.state.storeName; //서버 주소
+      let URL = linkdata.apiLink + "/restaurants/?input=" + storeName; //서버 주소
       console.log("통신 대상 URL : " + URL);
       console.log("통신 목적 : 검색어 전달 후 검색 결과 받기");
-      console.log(
-        "\n*************************서버 응답 대기중*************************\n"
-      );
+      console.log("\n*************************서버 응답 대기중*************************\n");
 
       let response = await fetch(URL, {
         method: "GET"
       });
       let rData = await response.json();
       if (rData && rData.restaurants) {
-        console.log(
-          "\n***********************서버로부터 응답 받음***********************\n"
-        );
+        console.log("\n***********************서버로부터 응답 받음***********************\n");
         console.log("데이터 확인!\n서버로부터 받은 데이터 : ");
-        console.log(rData)
+        console.log(rData);
         console.log("데이터 끝\n");
         this.setState({
-          textSearched: true,
+          restaurants: rData.restaurants,
           textSearching: false,
-          restaurants: rData.restaurants
+          textSearched: true
         });
-        console.log(
-          "restaurants에 저장하는 데이터 : ");
+        console.log("restaurants에 저장하는 데이터 : ");
         console.log(this.state.restaurants);
         console.log("데이터 끝\n");
-        console.log("textSearched  상태 : " + this.state.textSearched);
-        console.log("textSearching 상태 : " + this.state.textSearching);
+        console.log("textSearched  상태 : " + textSearched);
+        console.log("textSearching 상태 : " + textSearching);
         return;
       } else {
-        console.log(
-          "\n***********************서버로부터 응답 실패***********************\n"
-        );
-        console.log(
-          "\n***********************!!실패실패실패실패!!***********************\n"
-        );
+        console.log("\n***********************서버로부터 응답 실패***********************\n");
+        console.log("\n***********************!!실패실패실패실패!!***********************\n");
 
         this.setState({
           textSearched: false,
           textSearching: false
         });
-        console.log("textSearched  상태 : " + this.state.textSearched);
-        console.log("textSearching 상태 : " + this.state.textSearching);
+        console.log("textSearched  상태 : " + textSearched);
+        console.log("textSearching 상태 : " + textSearching);
       }
     } catch (error) {
       console.error(error);
@@ -276,9 +231,8 @@ export default class HomeScreen extends React.Component {
   };
 }
 
-_mapStoreSearch = async (event) => {
-
-  console.log(event.nativeEvent.coordinate)
+_mapStoreSearch = async event => {
+  console.log(event.nativeEvent.coordinate);
 
   try {
     let geoURL =
@@ -292,9 +246,7 @@ _mapStoreSearch = async (event) => {
 
     console.log("통신 대상 URL : " + geoURL);
     console.log("통신 목적 : 리버스 지오 코딩 주소 반환");
-    console.log(
-      "\n*************************서버 응답 대기중*************************\n"
-    );
+    console.log("\n*************************서버 응답 대기중*************************\n");
 
     let response = await fetch(geoURL, {
       method: "GET",
@@ -305,9 +257,7 @@ _mapStoreSearch = async (event) => {
     });
     let gData = await response.json();
     if (gData) {
-      console.log(
-        "\n***********************서버로부터 응답 받음***********************\n"
-      );
+      console.log("\n***********************서버로부터 응답 받음***********************\n");
       console.log("데이터 확인!\n서버로부터 받은 데이터 : ");
       console.log(gData);
       console.log("데이터 끝\n");
@@ -317,22 +267,6 @@ _mapStoreSearch = async (event) => {
     console.error(error);
   }
 };
-
-class StoreStatus extends React.Component {
-  render() {
-    return (
-      <TouchableOpacity
-        style={
-          this.props.isWritten ? styles.inabledStatus : styles.disabledStatus
-        }
-      >
-        {this.props.storeType.map(storeType => (
-          <Text key={storeType.toString()}>{storeType}</Text>
-        ))}
-      </TouchableOpacity>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   container: {
