@@ -1,66 +1,70 @@
 import React from "react";
 import { Platform } from "react-native";
-import {
-  createStackNavigator,
-  createMaterialTopTabNavigator
-} from "react-navigation";
+import { createStackNavigator, createMaterialTopTabNavigator } from "react-navigation";
 
 import ReviewInfoScreen from "../screens/review_screens/ReviewInfoScreen";
 import ReviewCameraScreen from "../screens/review_screens/ReviewCameraScreen";
 import ReviewWritingScreen from "../screens/review_screens/ReviewWritingScreen";
 
-// const InfoStack = createStackNavigator({
-//   ReviewInfo: ReviewInfoScreen
-// });
+import { connect } from "react-redux";
 
-// InfoStack.navigationOptions = {
-//   header: null,
-//   tabBarLabel: "정보"
-// };
+const linkdata = require("../linkdata.json");
 
-// const WritingStack = createStackNavigator({
-//   ReviewWriting: ReviewWritingScreen
-// });
+const InfoStack = createStackNavigator({
+  ReviewInfo: ReviewInfoScreen
+});
 
-// WritingStack.navigationOptions = {
-//   // header: null,
-//   tabBarLabel: "리뷰"
-// };
+InfoStack.navigationOptions = {
+  header: null,
+  tabBarLabel: "정보"
+};
 
-// const CameraStack = createStackNavigator({
-//   ReviewCamera: ReviewCameraScreen
-// });
+const WritingStack = createStackNavigator({
+  ReviewWriting: ReviewWritingScreen
+});
 
-// CameraStack.navigationOptions = {
-//   header: null,
-//   tabBarLabel: "사진"
-// };
+WritingStack.navigationOptions = {
+  // header: null,
+  tabBarLabel: "리뷰"
+};
 
+const CameraStack = createStackNavigator({
+  ReviewCamera: ReviewCameraScreen
+});
 
-export default createMaterialTopTabNavigator({
-  // InfoStack,
-  // WritingStack,
-  // CameraStack
-  Info : {screen : ReviewInfoScreen},
-  Writing : {screen : ReviewWritingScreen},
-  Camera : {screen : ReviewCameraScreen},
+CameraStack.navigationOptions = {
+  header: null,
+  tabBarLabel: "사진"
+};
 
-},{
-  tabBarOptions: {
-    style: {marginTop : 70},
-    activeTintColor: '#28b4f0',
-    inactiveTintColor: '#8e8e93',
-    labelStyle: {
-      fontSize: 16,
-    },
-    tabStyle: {
-      width: 120,
-    },
-    style: {
-      backgroundColor: '#f9f9fb',
-    },
-    indicatorStyle : {
-      backgroundColor: "white"
+let ReviewTabNavigator = createMaterialTopTabNavigator(
+  {
+    InfoStack,
+    WritingStack,
+    CameraStack
+    // Info : {screen : ReviewInfoScreen},
+    // Writing : {screen : ReviewWritingScreen},
+    // Camera : {screen : ReviewCameraScreen},
+  },
+  {
+    tabBarOptions: {
+      style: { marginTop: 70 },
+      activeTintColor: "#28b4f0",
+      inactiveTintColor: "#8e8e93",
+      labelStyle: {
+        fontSize: 16
+      },
+      tabStyle: {
+        width: 120
+      },
+      style: {
+        backgroundColor: "#f9f9fb"
+      },
+      indicatorStyle: {
+        backgroundColor: "white"
+      }
     }
   }
-});
+);
+
+export default connect(state => ({ review: state.review, storeInfo: state.storeInfo }))(ReviewTabNavigator);

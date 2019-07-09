@@ -22,7 +22,7 @@ import axios from "axios";
 
 import { Marker } from "expo";
 
-import MapView from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 import StoreStatus from "./mainScreenClasses/StoreStatus";
 
@@ -74,6 +74,7 @@ export default class HomeScreen extends React.Component {
             }}
           >
             <MapView
+              provider={PROVIDER_GOOGLE}
               style={{
                 height: this.state.superheight
               }}
@@ -116,36 +117,34 @@ export default class HomeScreen extends React.Component {
         </KeyboardAvoidingView>
 
         {textSearched ? ( //서치 후 나타나는 창
-          <ScrollView style={{ flex: 0.4, maxHeight: 282 }}>
-            <View style={styles.textSearchedContainer}>
-              {restaurants.map(store => (
-                <TouchableOpacity
-                  key={store.order}
-                  style={styles.ListItem}
-                  onPress={() =>
-                    this.props.navigation.push("Store", {
-                      itemId: store.id
-                    })
-                  }
-                >
-                  <View>
-                    <Text>
-                      {store.order}.{store.name}
-                      {store.branch_name ? store.branch_name : ""}
-                    </Text>
-                    <Text>{store.address}</Text>
-                  </View>
+          <ScrollView style={styles.textSearchedContainer}>
+            {restaurants.map(store => (
+              <TouchableOpacity
+                key={store.order}
+                style={styles.ListItem}
+                onPress={() =>
+                  this.props.navigation.push("Store", {
+                    itemId: store.id
+                  })
+                }
+              >
+                <View style={styles.storeInfos}>
+                  <Text style={styles.storeText}>
+                    {store.order}.{store.name}
+                    {store.branch_name ? " (" + store.branch_name + ")" : ""}
+                  </Text>
+                  <Text style={styles.loctionText}>{store.address}</Text>
+                </View>
 
-                  <View>
-                    <StoreStatus
-                      possibleReviewType={store.status.possible_review_type}
-                      registeredReviewType={store.status.registered_review_type}
-                      itemId={store.id}
-                    />
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
+                <View style={styles.storeStatusView}>
+                  <StoreStatus
+                    possibleReviewType={store.status.possible_review_type}
+                    registeredReviewType={store.status.registered_review_type}
+                    itemId={store.id}
+                  />
+                </View>
+              </TouchableOpacity>
+            ))}
           </ScrollView>
         ) : textSearching ? (
           <View style={{ height: 50 }}>
@@ -314,24 +313,43 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20
   },
-  textSearchedContainer: {},
+  textSearchedContainer: {
+    maxHeight: 300
+  },
   ListItem: {
-    height: 75
+    height: 75,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#d1d1d6"
   },
-  inabledStatus: {
-    width: 60,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#f0faff",
-    color: "rgba(255, 255, 255, 0)",
-    flexDirection: "row"
+  storeInfos:{
+    paddingTop: 15,
+    marginLeft: 16,
   },
-  disabledStatus: {
-    width: 60,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#f6f6fa",
-    color: "rgba(4, 4, 15, 0.45)",
-    flexDirection: "row"
+  storeText: {
+    width: 286,
+    fontSize: 16,
+    fontWeight: "normal",
+    fontStyle: "normal",
+    lineHeight: 20,
+    letterSpacing: 0,
+    textAlign: "left",
+    color: "#292929",
+    marginBottom: 1
+  },
+  loctionText: {
+    width: 286,
+    fontSize: 13,
+    fontWeight: "normal",
+    fontStyle: "normal",
+    lineHeight: 20,
+    letterSpacing: 0,
+    textAlign: "left",
+    color: "#8e8e93"
+  },
+  storeStatusView: {
+    paddingTop: 23,
+    marginRight: 16
   }
 });

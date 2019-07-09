@@ -1,79 +1,92 @@
 import React from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity
-} from "react-native";
-import {
-  Container,
-  Header,
-  Content,
-  List,
-  ListItem,
-  Left,
-  Right
-} from "native-base";
+import { StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
+import { Container, Header, Content, Left, Right, Radio } from "native-base";
+import { connect } from "react-redux";
+import { actionCreators } from "../../reducer";
+import produce from "immer";
+import ItemDivider from "./reviewScreenClasses/ItemDivider";
 
-export default class ReviewInfoScreen extends React.Component {
-  
+class ReviewInfoScreen extends React.Component {
   static navigationOptions = {
     header: null
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      review: {
+        day: "1998"
+      }
+    };
+  }
+
+  _changeDay = async text => {
+    const review = this.state;
+    await this.setState(
+      produce(review => {
+        review.day = text;
+      })
+    );
+    console.log(review.day);
+    this.props.applySaveReview(review);
   };
 
   render() {
     return (
       <Container style={styles.container}>
         <Content>
-          <List>
-            <ListItem itemDivider />
-            <ListItem>
+          <View>
+            <ItemDivider />
+            <View>
               <Left>
-                <Text>방문 날짜</Text>
+                <Text>방문 날짜{this.state.review.day}</Text>
               </Left>
               <Right>
-                <TextInput />
+                <TextInput placeholder="방문날짜" onChangeText={this._changeDay} blurOnSubmit={false} />
               </Right>
-            </ListItem>
-            <ListItem itemDivider />
-            <ListItem>
+            </View>
+            <ItemDivider />
+            <View>
               <Left>
                 <Text>작성 시간</Text>
               </Left>
               <Right>
                 <Text>gg</Text>
               </Right>
-            </ListItem>
-            <ListItem itemDivider>
-              <Text>작성 시간은 리뷰 최초 저장 시 기록됩니다.</Text>
-            </ListItem>
-            <ListItem>
+            </View>
+            <ItemDivider text={"작성 시간은 리뷰 최초 저장 시 기록됩니다."} />
+
+            <View>
               <Left>
                 <Text>음식점</Text>
               </Left>
               <Right>
                 <Text>펭귄리포트(1호점)</Text>
               </Right>
-            </ListItem>
-            <ListItem>
+            </View>
+
+            <View>
               <Left>
                 <Text>리뷰 유형</Text>
               </Left>
               <Right>
                 <Text>식사</Text>
               </Right>
-            </ListItem>
-            <ListItem>
+            </View>
+
+            <View>
               <Left>
                 <Text>리뷰어</Text>
               </Left>
               <Right>
                 <Text>젠투펭귄</Text>
               </Right>
-            </ListItem>
-            <ListItem itemDivider />
-            <ListItem>
+            </View>
+
+            <ItemDivider />
+
+            <View />
+            <View>
               <View>
                 <Left>
                   <Text>크기</Text>
@@ -88,8 +101,8 @@ export default class ReviewInfoScreen extends React.Component {
                   <Text>특대</Text>
                 </View>
               </View>
-            </ListItem>
-            <ListItem>
+            </View>
+            <View>
               <View>
                 <Left>
                   <Text>복층</Text>
@@ -100,8 +113,8 @@ export default class ReviewInfoScreen extends React.Component {
                   <Text>Y</Text>
                 </View>
               </View>
-            </ListItem>
-            <ListItem>
+            </View>
+            <View>
               <View>
                 <Left>
                   <Text>룸</Text>
@@ -112,8 +125,8 @@ export default class ReviewInfoScreen extends React.Component {
                   <Text>Y</Text>
                 </View>
               </View>
-            </ListItem>
-            <ListItem>
+            </View>
+            <View>
               <View>
                 <Left>
                   <Text>셀프 서비스</Text>
@@ -128,8 +141,8 @@ export default class ReviewInfoScreen extends React.Component {
                   <Text>퇴식</Text>
                 </View>
               </View>
-            </ListItem>
-            <ListItem>
+            </View>
+            <View>
               <View>
                 <Left>
                   <Text>화장실</Text>
@@ -142,17 +155,17 @@ export default class ReviewInfoScreen extends React.Component {
                   <Text>외부</Text>
                 </View>
               </View>
-            </ListItem>
-            <ListItem itemDivider />
-            <ListItem>
+            </View>
+
+            <ItemDivider />
+
+            <View>
               <Left>
                 <Text>리뷰 삭제</Text>
               </Left>
-            </ListItem>
-            <ListItem itemDivider>
-              <Text>승인되지 않은 리뷰만 삭제 가능합니다.</Text>
-            </ListItem>
-          </List>
+            </View>
+            <ItemDivider text={"승인되지 않은 리뷰만 삭제 가능합니다."} />
+          </View>
         </Content>
       </Container>
     );
@@ -164,3 +177,22 @@ const styles = StyleSheet.create({
     flex: 1
   }
 });
+
+function mapStateToProps(state) {
+  return {
+    review: state.review
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    applySaveReview: review => {
+      dispatch(actionCreators.saveReview(review));
+    }
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ReviewInfoScreen);

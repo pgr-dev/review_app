@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  createAppContainer,
-  createSwitchNavigator,
-  createStackNavigator
-} from "react-navigation";
+import { createAppContainer, createSwitchNavigator, createStackNavigator } from "react-navigation";
 import { Image, Button, Text, TouchableOpacity } from "react-native";
 import MainTabNavigator from "./MainTabNavigator";
 import ReviewTabNavigator from "./ReviewTabNavigator";
@@ -12,6 +8,7 @@ import LoginScreen from "../screens/audit_screens/LoginScreen";
 // import AuthNavigator from './AuthNavigator';
 // import LoadingScreen from "../screens/audit_screens/LoadingScreen";
 // import DashboardScreen from "../screens/audit_screens/DashboardScreen";
+import { Provider, connect } from "react-redux";
 
 class LogoTitle extends React.Component {
   render() {
@@ -56,6 +53,8 @@ const ReviewNavigationOptions = props => ({
   )
 });
 
+let ReviewTabContainer = connect(state => ({ review: state.review }))(ReviewTabNavigator);
+
 export default createAppContainer(
   createStackNavigator(
     {
@@ -68,7 +67,7 @@ export default createAppContainer(
       },
       Store: { screen: StoreScreen, navigationOptions: StoreNavigationOptions },
       Review: {
-        screen: ReviewTabNavigator,
+        screen: ReviewTabContainer,
         navigationOptions: ReviewNavigationOptions
       }
     },

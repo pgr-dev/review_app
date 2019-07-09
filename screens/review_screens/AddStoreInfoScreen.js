@@ -83,6 +83,7 @@ export default class ReviewInfoScreen extends React.Component {
 
   render() {
     let { itemID, storeDataReceivied, storeInfo, storeImage, IsStoreInfoChanged, IsStoreImageChanged } = this.state;
+    const storeinfojs = storeInfo.get
 
     return (
       <KeyboardAvoidingView style={styles.container}>

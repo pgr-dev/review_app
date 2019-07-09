@@ -12,13 +12,14 @@ import {
 } from "react-native";
 import * as Expo from "expo";
 import GoogleSignInButton from "./GoogleSignInButton";
+import { connect } from "react-redux";
+import { actionCreators } from "../../reducer";
 
-const clientId =
-  "542840505079-buui9r0lcgtj518il8h1b805ufkrdnoh.apps.googleusercontent.com";
+const clientId = "542840505079-buui9r0lcgtj518il8h1b805ufkrdnoh.apps.googleusercontent.com";
 
 const isAndroid = () => Platform.OS === "android";
 
-export default class App extends React.Component {
+class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -48,6 +49,7 @@ export default class App extends React.Component {
         console.log(result.idToken);
         console.log("\n\n");
         console.log(result.user);
+        this.props.applyLogin(result);
         this.setState({
           id: result.user.id,
           signedIn: true,
@@ -72,32 +74,23 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        {this.state.signedIn
-          ? <View style={styles.container}>
-              <Text style={styles.header}>
-                Welcome:{this.state.name}
-              </Text>
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate("HomeScreen")}
-              >
-                <Image
-                  style={styles.image}
-                  source={{ uri: this.state.photoUrl }}
-                />
-              </TouchableOpacity>
-            </View>
-          : <View>
-              {this.state.signing
-                ? <ActivityIndicator />
-                : <GoogleSignInButton
-                    onPress={() => this.signIn()}
-                    style={{ flex: 1 }}
-                  />}
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate("HomeScreen")}
-                style={{ flex: 1 }}
-              />
-            </View>}
+        {this.state.signedIn ? (
+          <View style={styles.container}>
+            <Text style={styles.header}>Welcome:{this.state.name}</Text>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate("HomeScreen")}>
+              <Image style={styles.image} source={{ uri: this.state.photoUrl }} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View>
+            {this.state.signing ? (
+              <ActivityIndicator />
+            ) : (
+              <GoogleSignInButton onPress={() => this.signIn()} style={{ flex: 1 }} />
+            )}
+            <TouchableOpacity onPress={() => this.props.navigation.navigate("HomeScreen")} style={{ flex: 1 }} />
+          </View>
+        )}
       </View>
     );
   }
@@ -123,3 +116,22 @@ const styles = StyleSheet.create({
     borderRadius: 15
   }
 });
+
+function mapStateToProps(state) {
+  return {
+    LoginToken: state.LoginToken
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    applyLogin: LoginToken => {
+      dispatch(actionCreators.getLoginToken(LoginToken));
+    }
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LoginScreen);
