@@ -20,7 +20,6 @@ import reducer from './reducer';
 // //파이어 베이스 사용 끝
 
 let store = createStore(reducer);
-
 console.log(store.getState());
 
 export default class App extends React.Component {
